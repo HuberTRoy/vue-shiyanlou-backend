@@ -1,4 +1,5 @@
 from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 import requests
 
 # def makeGET(params):
@@ -8,7 +9,29 @@ import requests
 
 baseUrl = "https://www.shiyanlou.com/api/v2/"
 
-#comment
+# auth
+@csrf_exempt
+def login(request):
+    content = requests.post(f"{baseUrl}auth/login/", data=request.body.decode(), headers={
+        'Content-Type': 'application/json'
+        })
+    response = JsonResponse(content.json(), safe=False)
+    # 登陆失败
+    if not content.json().get('comet_token'):
+        return response
+    # 登录成功, 设置cookies.
+
+    # response['Access-Control-Allow-Credentials'] = True
+    # response['Access-Control-Allow-Origin'] = "http://localhost:8080"
+    # for cookieName, cookieValue in content.cookies:
+    # response.set_cookie('session', content.cookies['session'])
+    # 似乎chrome不允许设置带有端口号的cookies. 直接把 session 用Json传了吧...
+    # 用Js设置。
+    with_session = content.json()
+    with_session['session'] = content.cookies['session']
+    return JsonResponse(with_session, safe=False)
+
+# comment
 def comment(request):
     content = requests.get(f"{baseUrl}comments/", params=request.GET)
     return JsonResponse(content.json(), safe=False)
