@@ -7,6 +7,9 @@ urlpatterns = [
     path('v2/courses/<int:courseId>/', views.course, name='course'),
     path('v2/courses/<int:courseId>/labs/', views.courseLabs, name='courseLabs'),
     path('v2/courses/categories/', views.categories, name='categories'),
+    path('v2/courses/<int:courseId>/follow/', views.follow, name='follow'),
+    path('v2/courses/userstatus/', views.courseUserStatus, name='courseUserStatus'),
+    path('v2/courses/<int:courseId>/join/', views.join, name='joinCourse'),
 
     path('v2/index/categories/', views.indexCategories, name='indexCategories'),
     path('v2/index/banner-pictures/', views.indexBanner, name='indexBanner'),
@@ -31,6 +34,10 @@ urlpatterns = [
 
     path('v2/labreports/', views.labreports, name='labreports'),
 
-    path('v2/auth/login', views.login, name='login')
+    path('v2/auth/login', views.login, name='login'),
+
+    path('v2/user/', views.userInfo, name='user'),
+
+    path('v2/users/<int:userId>/courses/', views.userStudiedCourses, name='userStudiedCourses'),
 ]
 

@@ -1,13 +1,132 @@
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import requests
-
-# def makeGET(params):
-#     """
-#         {params:1, params2: 2} to params=1&params2=2
-#     """
+import json
 
 baseUrl = "https://www.shiyanlou.com/api/v2/"
+
+# localhost 不能携带cookies, 不重写 requests.get/post 强行携带cookies 了。
+# 只按需给某些需要cookies的链接带上cookies吧。
+# 当然用cookies不能传递,还是需要带在POST/GET参数中。
+
+# === 里面是登录后解锁的内容。
+
+# 这样有安全性问题.
+# localhost下也没法传递cookies.
+def getSessionFromGetOrPost(data):
+
+    try:
+        data.get('session')
+    except:
+        data = json.loads(data)
+
+    if data:
+        return {'session': data.get('session')}
+    
+    return {'session': ''}
+
+
+# 课程部分
+def courseUserStatus(request):
+    # courses/userstatus/?course_ids=1
+    # 需要cookies.
+    cookies = getSessionFromGetOrPost(request.GET)
+
+    content = requests.get(f"{baseUrl}courses/userstatus/", params={'course_ids': request.GET.get('course_ids')}, cookies=cookies)
+
+    return JsonResponse(content.json(), safe=False)
+
+@csrf_exempt
+def follow(request, courseId):
+    # PUT 方式提交的会关注某一课程
+    # DELETE 则是取消关注
+    # courses/1/follow/
+    # 需要cookies.
+    cookies = getSessionFromGetOrPost(request.GET)
+    if not cookies.get('session'):
+        cookies = getSessionFromGetOrPost(request.body.decode())
+
+    if request.method == "PUT":
+        resposne = requests.put(f"{baseUrl}courses/{courseId}/follow", cookies=cookies)
+    else:
+        response = requests.delete(f"{baseUrl}courses/{courseId}/follow", cookies=cookies)
+
+    if int(response.status_code) == 200 or int(response.status_code) == 204:
+        return HttpResponse()
+    return HttpResponse(status_code=500)
+
+# 进行实验部分.
+# 这一部分未计划接入.
+# 就当前来说join有用，其他的暂且不用。
+@csrf_exempt
+def join(request, courseId):
+    # courses/1/join
+    # 需要用POST提交.
+    # 需要cookies.
+    # 无返回数据，200应该就是加入成功了。
+    cookies = getSessionFromGetOrPost(request.GET)
+    if not cookies.get('session'):
+        cookies = getSessionFromGetOrPost(request.body.decode())
+
+    content = requests.post(f"{baseUrl}courses/{courseId}/join/", cookies=cookies)    
+    # return JsonResponse(content.json(), safe=False)
+    if int(content.status_code) == 200 or int(content.status_code) == 204:
+        return HttpResponse()
+    return HttpResponse(status_code=500)
+
+def labtask(request):
+    # /labtask
+    # 需要cookies.
+    # 返回当前正在试验中的数据。
+    pass
+
+# 关于用户的数据,包括仅登录后能用的和只需要userId就可以使用的。
+def userInfo(request):
+    # user/
+    # 仅需cookies, cookies 也是必须的。
+    cookies = getSessionFromGetOrPost(request.GET)
+    if not cookies.get('session'):
+        cookies = getSessionFromGetOrPost(request.body.decode())
+
+    content = requests.get(f"{baseUrl}user/", cookies=cookies)
+
+    return JsonResponse(content.json(), safe=False)
+
+def userStudiedCourses(request, userId):
+    # users/1146797/courses/?page_size=5&type=studied
+    # 这个无需 cookies.
+    content = requests.get(f"{baseUrl}users/{userId}/courses", params=request.GET)
+    return JsonResponse(content.json(), safe=False)
+
+def userFollowCourses(request):
+    # users/1146797/courses/?userId=1146797&type=followed
+    # 无需 cookies.
+    pass
+
+def userBoughtCourses(request):
+    # users/1146797/courses/?userId=1146797&type=bought
+    # 无需 cookies.
+    pass
+
+def userPath(request):
+    # users/1146797/paths/
+    # 无需 cookies.
+    pass
+
+def userLabReports(request):
+    # users/1146797/labreports/
+    # 无需 cookies.
+    pass
+
+def userQuestion(request):
+    # users/1146797/questions/?type=answered
+    # 无需 cookies.
+    pass
+
+# 教程和比赛,暂未加入计划。
+# users/1146797/contests/?page_size=15
+# users/1146797/books/?userId=1146797&type=marked
+# ===
 
 # auth
 @csrf_exempt
@@ -32,9 +151,20 @@ def login(request):
     return JsonResponse(with_session, safe=False)
 
 # comment
+@csrf_exempt
 def comment(request):
-    content = requests.get(f"{baseUrl}comments/", params=request.GET)
-    return JsonResponse(content.json(), safe=False)
+    # 以 GET 提交。
+    if request.method == 'GET':
+        content = requests.get(f"{baseUrl}comments/", params=request.GET)
+        return JsonResponse(content.json(), safe=False)
+    # 以 POST 提交 需要 cookies.
+    elif request.method == 'POST':
+        cookies = getSessionFromGetOrPost(request.GET)
+        if not cookies.get('session'):
+            cookies = getSessionFromGetOrPost(request.body.decode())
+
+        content = request.POST(f"{baseUrl}comments/", data=request.body.decode(), cookies=cookies)
+        return JsonResponse(content.json(), safe=False) 
 
 # path
 def stages(request, pathId):
