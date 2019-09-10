@@ -31,8 +31,12 @@ def courseUserStatus(request):
     # courses/userstatus/?course_ids=1
     # 需要cookies.
     cookies = getSessionFromGetOrPost(request.GET)
+    if not cookies.get('session'):
+        params = {'user_id': request.GET.get('user_id'), 'course_ids': request.GET.get('course_ids')}
+    else:
+        params = {'course_ids': request.GET.get('course_ids')}
 
-    content = requests.get(f"{baseUrl}courses/userstatus/", params={'course_ids': request.GET.get('course_ids')}, cookies=cookies)
+    content = requests.get(f"{baseUrl}courses/userstatus/", params=params, cookies=cookies)
 
     return JsonResponse(content.json(), safe=False)
 
@@ -47,7 +51,7 @@ def follow(request, courseId):
         cookies = getSessionFromGetOrPost(request.body.decode())
 
     if request.method == "PUT":
-        resposne = requests.put(f"{baseUrl}courses/{courseId}/follow", cookies=cookies)
+        response = requests.put(f"{baseUrl}courses/{courseId}/follow", cookies=cookies)
     else:
         response = requests.delete(f"{baseUrl}courses/{courseId}/follow", cookies=cookies)
 
@@ -92,6 +96,11 @@ def userInfo(request):
 
     return JsonResponse(content.json(), safe=False)
 
+def userInfoWithoutCookies(request, userId):
+    content = requests.get(f"{baseUrl}users/{userId}/")
+
+    return JsonResponse(content.json(), safe=False)   
+
 def userStudiedCourses(request, userId):
     # users/1146797/courses/?page_size=5&type=studied
     # 这个无需 cookies.
@@ -108,20 +117,26 @@ def userBoughtCourses(request):
     # 无需 cookies.
     pass
 
-def userPath(request):
+def userPaths(request, userId):
     # users/1146797/paths/
     # 无需 cookies.
-    pass
+    content = requests.get(f"{baseUrl}users/{userId}/paths/")
+    return JsonResponse(content.json(), safe=False)
 
-def userLabReports(request):
+def userLabreports(request, userId):
     # users/1146797/labreports/
     # 无需 cookies.
-    pass
+    content = requests.get(f"{baseUrl}users/{userId}/labreports/")
+    return JsonResponse(content.json(), safe=False)
 
 def userQuestion(request):
     # users/1146797/questions/?type=answered
     # 无需 cookies.
     pass
+
+def userQuestionsForOneCourse(request, userId):
+    content = requests.get(f"{baseUrl}users/{userId}/questions/", params=request.GET)
+    return JsonResponse(content.json(), safe=False)
 
 # 教程和比赛,暂未加入计划。
 # users/1146797/contests/?page_size=15
@@ -213,9 +228,20 @@ def question(request, questionId):
     content = requests.get(f"{baseUrl}questions/{questionId}")
     return JsonResponse(content.json(), safe=False)
 
+@csrf_exempt
 def questionAnswers(request, questionId):
-    content = requests.get(f"{baseUrl}questions/{questionId}/answers/", params=request.GET)
-    return JsonResponse(content.json(), safe=False)
+    if request.method == "GET":
+        content = requests.get(f"{baseUrl}questions/{questionId}/answers/", params=request.GET)
+        return JsonResponse(content.json(), safe=False)
+    else:
+        cookies = getSessionFromGetOrPost(request.GET)
+        if not cookies.get('session'):
+            cookies = getSessionFromGetOrPost(request.body.decode())
+
+        response = requests.post(f"{baseUrl}questions/{questionId}/answers/", data=request.body.decode(), cookies=cookies, headers={'Content-Type': 'application/json;charset=UTF-8'})
+
+        return JsonResponse(response.json(), safe=False)        
+
 
 def recentLouplus(request):
     content = requests.get(f"{baseUrl}fringe/recent-louplus-courses/")
