@@ -31,6 +31,8 @@ urlpatterns = [
     path('v2/paths/<int:pathId>/stages/', views.stages, name='pathStages'),
 
     path('v2/comments/', views.comment, name='comments'),
+    path('v2/comments/userstatus/', views.commentsUserstatus, name='commentsUserstatus'),
+    path('v2/comments/<int:commentId>/', views.deleteComment, name='deleteComment'),
 
     path('v2/labreports/', views.labreports, name='labreports'),
 

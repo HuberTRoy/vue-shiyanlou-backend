@@ -159,12 +159,37 @@ def comment(request):
         return JsonResponse(content.json(), safe=False)
     # 以 POST 提交 需要 cookies.
     elif request.method == 'POST':
+        # content: "o"
+        # topic_id: 1
+        # topic_type: "course"
         cookies = getSessionFromGetOrPost(request.GET)
         if not cookies.get('session'):
             cookies = getSessionFromGetOrPost(request.body.decode())
 
-        content = request.POST(f"{baseUrl}comments/", data=request.body.decode(), cookies=cookies)
+        # data = request.body.decode()
+        content = requests.post(f"{baseUrl}comments/", data=request.body.decode(), cookies=cookies, headers={'Content-Type': 'application/json;charset=UTF-8'})
         return JsonResponse(content.json(), safe=False) 
+
+def commentsUserstatus(request):
+    # 需要cookies。
+    cookies = getSessionFromGetOrPost(request.GET)
+    if not cookies.get('session'):
+        cookies = getSessionFromGetOrPost(request.body.decode())
+
+    content = requests.get(f"{baseUrl}comments/userstatus/", params={'comment_ids': request.GET.get('comment_ids')}, cookies=cookies)
+    return JsonResponse(content.json(), safe=False)
+
+@csrf_exempt
+def deleteComment(request, commentId):
+    cookies = getSessionFromGetOrPost(request.GET)
+    if not cookies.get('session'):
+        cookies = getSessionFromGetOrPost(request.body.decode())
+
+    response = requests.delete(f"{baseUrl}comments/{commentId}/", cookies=cookies)
+
+    if int(response.status_code) == 200 or int(response.status_code) == 204:
+        return HttpResponse()
+    return HttpResponse(status_code=500)
 
 # path
 def stages(request, pathId):
