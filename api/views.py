@@ -138,6 +138,14 @@ def userQuestionsForOneCourse(request, userId):
     content = requests.get(f"{baseUrl}users/{userId}/questions/", params=request.GET)
     return JsonResponse(content.json(), safe=False)
 
+def checkin(request):
+    cookies = getSessionFromGetOrPost(request.GET)
+    if not cookies.get('session'):
+        cookies = getSessionFromGetOrPost(request.body.decode())
+
+    content = requests.get(f"{baseUrl}user/checkin/", cookies=cookies)
+    return JsonResponse(content.json(), safe=False)
+
 # 教程和比赛,暂未加入计划。
 # users/1146797/contests/?page_size=15
 # users/1146797/books/?userId=1146797&type=marked

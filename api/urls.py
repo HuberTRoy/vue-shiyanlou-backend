@@ -39,9 +39,10 @@ urlpatterns = [
     path('v2/auth/login', views.login, name='login'),
 
     path('v2/user/', views.userInfo, name='user'),
+    path('v2/user/checkin/', views.checkin, name='checkin'),
     path('v2/users/<int:userId>/', views.userInfoWithoutCookies, name='userWithoutCookies'),
     path('v2/users/<int:userId>/courses/', views.userStudiedCourses, name='userStudiedCourses'),
     path('v2/users/<int:userId>/questions/', views.userQuestionsForOneCourse, name='userQuestionsForOneCourse'),
     path('v2/users/<int:userId>/paths/', views.userPaths, name='userPath'),
-    path('v2/users/<int:userId>/labreports/', views.userLabreports, name='userLabreports')
+    path('v2/users/<int:userId>/labreports/', views.userLabreports, name='userLabreports'),
 ]
