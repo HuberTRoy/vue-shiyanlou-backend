@@ -85,6 +85,7 @@ def labtask(request):
     pass
 
 # 关于用户的数据,包括仅登录后能用的和只需要userId就可以使用的。
+@csrf_exempt
 def userInfo(request):
     # user/
     # 仅需cookies, cookies 也是必须的。
@@ -92,9 +93,22 @@ def userInfo(request):
     if not cookies.get('session'):
         cookies = getSessionFromGetOrPost(request.body.decode())
 
-    content = requests.get(f"{baseUrl}user/", cookies=cookies)
-
-    return JsonResponse(content.json(), safe=False)
+    if request.method == 'GET':
+        content = requests.get(f"{baseUrl}user/", cookies=cookies)
+        return JsonResponse(content.json(), safe=False)
+    elif request.method == 'PATCH':
+        data = request.body.decode()
+        data = json.loads(data)
+        data.pop('session')
+        # print(data)
+        content = requests.patch(f"{baseUrl}user/", data=json.dumps(data), cookies=cookies, headers={
+            'Content-Type': 'application/json'
+            })
+        # print(content.text)
+        if int(content.status_code) == 200:
+            return JsonResponse(content.json(), safe=False)
+        else:
+            return HttpResponse(content.status_code)
 
 def userInfoWithoutCookies(request, userId):
     content = requests.get(f"{baseUrl}users/{userId}/")
@@ -149,6 +163,79 @@ def checkin(request):
     elif request.method == 'GET':
         content = requests.get(f"{baseUrl}user/checkin/", cookies=cookies)
     
+    return JsonResponse(content.json(), safe=False)
+
+
+@csrf_exempt
+def changeEmail(request):
+    cookies = getSessionFromGetOrPost(request.GET)
+    if not cookies.get('session'):
+        cookies = getSessionFromGetOrPost(request.body.decode())
+
+    data = json.loads(request.body.decode())
+    data.pop('session')
+
+    content = requests.post(f"{baseUrl}user/change-email/", data=json.dumps(data), cookies=cookies, headers={
+            'Content-Type': 'application/json'
+            })
+    try:
+        return JsonResponse(content.json(), safe=False)
+    except:
+        return HttpResponse(200)
+
+@csrf_exempt
+def changePassword(request):
+    cookies = getSessionFromGetOrPost(request.GET)
+    if not cookies.get('session'):
+        cookies = getSessionFromGetOrPost(request.body.decode())
+
+    data = json.loads(request.body.decode())
+    data.pop('session')
+
+    content = requests.post(f"{baseUrl}user/change-password/", data=json.dumps(data), cookies=cookies, headers={
+            'Content-Type': 'application/json'
+            })
+
+    try:
+        return JsonResponse(content.json(), safe=False)
+    except:
+        return HttpResponse(200)
+
+@csrf_exempt
+def changePassword(request):
+    cookies = getSessionFromGetOrPost(request.GET)
+    if not cookies.get('session'):
+        cookies = getSessionFromGetOrPost(request.body.decode())
+
+    data = json.loads(request.body.decode())
+    data.pop('session')
+
+    content = requests.post(f"{baseUrl}user/change-password/", data=json.dumps(data), cookies=cookies, headers={
+            'Content-Type': 'application/json'
+            })
+
+    try:
+        return JsonResponse(content.json(), safe=False)
+    except:
+        return HttpResponse(200)
+
+@csrf_exempt
+def mailSettings(request):
+    cookies = getSessionFromGetOrPost(request.GET)
+    if not cookies.get('session'):
+        cookies = getSessionFromGetOrPost(request.body.decode())
+
+    if request.method == 'GET':
+        content = requests.get(f"{baseUrl}user/mail-settings/", cookies=cookies)
+        # return JsonResponse(content.json(), safe=False)
+
+    elif request.method == 'PUT':
+        data = json.loads(request.body.decode())
+        data.pop('session')
+        content = requests.put(f"{baseUrl}user/mail-settings/", data=json.dumps(data), cookies=cookies, headers={
+            'Content-Type': 'application/json'
+            })
+
     return JsonResponse(content.json(), safe=False)
 
 # 教程和比赛,暂未加入计划。
@@ -313,4 +400,16 @@ def courses(request):
 
 def labreports(request):
     content = requests.get(f"{baseUrl}labreports/", params=request.GET)
+    return JsonResponse(content.json(), safe=False)
+
+def library(request):
+    content = requests.get(f"{baseUrl}library/")
+    return JsonResponse(content.json(), safe=False)
+
+def libraryBooks(request):
+    content = requests.get(f"{baseUrl}library/books/", params=request.GET)
+    return JsonResponse(content.json(), safe=False)
+
+def search(request):
+    content = requests.get(f"{baseUrl}search/", params=request.GET)
     return JsonResponse(content.json(), safe=False)

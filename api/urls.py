@@ -40,9 +40,17 @@ urlpatterns = [
 
     path('v2/user/', views.userInfo, name='user'),
     path('v2/user/checkin/', views.checkin, name='checkin'),
+    path('v2/user/change-email/', views.changeEmail, name='changeEmail'),
+    path('v2/user/change-password/', views.changePassword, name='changePassword'),
+    path('v2/user/mail-settings/', views.mailSettings, name='mailSettings'),
+    
     path('v2/users/<int:userId>/', views.userInfoWithoutCookies, name='userWithoutCookies'),
     path('v2/users/<int:userId>/courses/', views.userStudiedCourses, name='userStudiedCourses'),
     path('v2/users/<int:userId>/questions/', views.userQuestionsForOneCourse, name='userQuestionsForOneCourse'),
     path('v2/users/<int:userId>/paths/', views.userPaths, name='userPath'),
     path('v2/users/<int:userId>/labreports/', views.userLabreports, name='userLabreports'),
+    path('v2/library/', views.library, name='library'),
+    path('v2/library/books/', views.libraryBooks, name='libraryBooks'),
+
+    path('v2/search/', views.search, name='search')
 ]
