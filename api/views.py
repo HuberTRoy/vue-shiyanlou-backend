@@ -12,31 +12,47 @@ baseUrl = "https://www.shiyanlou.com/api/v2/"
 # === 里面是登录后解锁的内容。
 
 # 这样有安全性问题.
-# localhost下也没法传递cookies.
-def getSessionFromGetOrPost(data):
+# # localhost下也没法传递cookies.
+# def getSessionFromGetOrPost(data):
 
-    try:
-        data.get('session')
-    except:
-        data = json.loads(data)
+#     try:
+#         data.get('session')
+#     except:
+#         data = json.loads(data)
 
-    if data:
-        return {'session': data.get('session')}
+#     if data:
+#         return {'session': data.get('session')}
     
-    return {'session': ''}
+#     return {'session': ''}
+
+
+# 一些额外的东西
+@csrf_exempt
+def getQiniuToken(request):
+    # cookies = getSessionFromGetOrPost(request.GET)
+    # if not cookies.get('session'):
+    #     cookies = getSessionFromGetOrPost(request.body.decode())
+    
+    # data = json.loads(request.body.decode())
+    # data.pop('session')
+
+    content = requests.post(f'{baseUrl}services/qiniu/token/', data=request.body, cookies=request.COOKIES, headers={
+        'Content-Type': 'application/json;charset=UTF-8'
+        })
+    return JsonResponse(content.json(), safe=False)
 
 
 # 课程部分
 def courseUserStatus(request):
     # courses/userstatus/?course_ids=1
     # 需要cookies.
-    cookies = getSessionFromGetOrPost(request.GET)
+    cookies = request.COOKIES
     if not cookies.get('session'):
         params = {'user_id': request.GET.get('user_id'), 'course_ids': request.GET.get('course_ids')}
     else:
         params = {'course_ids': request.GET.get('course_ids')}
 
-    content = requests.get(f"{baseUrl}courses/userstatus/", params=params, cookies=cookies)
+    content = requests.get(f"{baseUrl}courses/userstatus/", params=params, cookies=request.COOKIES)
 
     return JsonResponse(content.json(), safe=False)
 
@@ -46,14 +62,14 @@ def follow(request, courseId):
     # DELETE 则是取消关注
     # courses/1/follow/
     # 需要cookies.
-    cookies = getSessionFromGetOrPost(request.GET)
-    if not cookies.get('session'):
-        cookies = getSessionFromGetOrPost(request.body.decode())
+    # cookies = getSessionFromGetOrPost(request.GET)
+    # if not cookies.get('session'):
+    #     cookies = getSessionFromGetOrPost(request.body.decode())
 
     if request.method == "PUT":
-        response = requests.put(f"{baseUrl}courses/{courseId}/follow", cookies=cookies)
+        response = requests.put(f"{baseUrl}courses/{courseId}/follow", cookies=request.COOKIES)
     else:
-        response = requests.delete(f"{baseUrl}courses/{courseId}/follow", cookies=cookies)
+        response = requests.delete(f"{baseUrl}courses/{courseId}/follow", cookies=request.COOKIES)
 
     if int(response.status_code) == 200 or int(response.status_code) == 204:
         return HttpResponse()
@@ -68,11 +84,11 @@ def join(request, courseId):
     # 需要用POST提交.
     # 需要cookies.
     # 无返回数据，200应该就是加入成功了。
-    cookies = getSessionFromGetOrPost(request.GET)
-    if not cookies.get('session'):
-        cookies = getSessionFromGetOrPost(request.body.decode())
+    # cookies = getSessionFromGetOrPost(request.GET)
+    # if not cookies.get('session'):
+    #     cookies = getSessionFromGetOrPost(request.body.decode())
 
-    content = requests.post(f"{baseUrl}courses/{courseId}/join/", cookies=cookies)    
+    content = requests.post(f"{baseUrl}courses/{courseId}/join/", cookies=request.COOKIES)    
     # return JsonResponse(content.json(), safe=False)
     if int(content.status_code) == 200 or int(content.status_code) == 204:
         return HttpResponse()
@@ -89,19 +105,19 @@ def labtask(request):
 def userInfo(request):
     # user/
     # 仅需cookies, cookies 也是必须的。
-    cookies = getSessionFromGetOrPost(request.GET)
-    if not cookies.get('session'):
-        cookies = getSessionFromGetOrPost(request.body.decode())
+    # cookies = getSessionFromGetOrPost(request.GET)
+    # if not cookies.get('session'):
+    #     cookies = getSessionFromGetOrPost(request.body.decode())
 
     if request.method == 'GET':
-        content = requests.get(f"{baseUrl}user/", cookies=cookies)
+        content = requests.get(f"{baseUrl}user/", cookies=request.COOKIES)
         return JsonResponse(content.json(), safe=False)
     elif request.method == 'PATCH':
-        data = request.body.decode()
-        data = json.loads(data)
-        data.pop('session')
+        # data = request.body.decode()
+        # data = json.loads(data)
+        # data.pop('session')
         # print(data)
-        content = requests.patch(f"{baseUrl}user/", data=json.dumps(data), cookies=cookies, headers={
+        content = requests.patch(f"{baseUrl}user/", data=request.body, cookies=request.COOKIES, headers={
             'Content-Type': 'application/json'
             })
         # print(content.text)
@@ -154,28 +170,27 @@ def userQuestionsForOneCourse(request, userId):
 
 @csrf_exempt
 def checkin(request):
-    cookies = getSessionFromGetOrPost(request.GET)
-    if not cookies.get('session'):
-        cookies = getSessionFromGetOrPost(request.body.decode())
+    # cookies = getSessionFromGetOrPost(request.GET)
+    # if not cookies.get('session'):
+    #     cookies = getSessionFromGetOrPost(request.body.decode())
 
     if request.method == 'POST':
-        content = requests.post(f"{baseUrl}user/checkin/", cookies=cookies)
+        content = requests.post(f"{baseUrl}user/checkin/", cookies=request.COOKIES)
     elif request.method == 'GET':
-        content = requests.get(f"{baseUrl}user/checkin/", cookies=cookies)
+        content = requests.get(f"{baseUrl}user/checkin/", cookies=request.COOKIES)
     
     return JsonResponse(content.json(), safe=False)
 
-
 @csrf_exempt
 def changeEmail(request):
-    cookies = getSessionFromGetOrPost(request.GET)
-    if not cookies.get('session'):
-        cookies = getSessionFromGetOrPost(request.body.decode())
+    # cookies = getSessionFromGetOrPost(request.GET)
+    # if not cookies.get('session'):
+    #     cookies = getSessionFromGetOrPost(request.body.decode())
 
-    data = json.loads(request.body.decode())
-    data.pop('session')
+    # data = json.loads(request.body.decode())
+    # data.pop('session')
 
-    content = requests.post(f"{baseUrl}user/change-email/", data=json.dumps(data), cookies=cookies, headers={
+    content = requests.post(f"{baseUrl}user/change-email/", data=request.body, cookies=request.COOKIES, headers={
             'Content-Type': 'application/json'
             })
     try:
@@ -185,14 +200,14 @@ def changeEmail(request):
 
 @csrf_exempt
 def changePassword(request):
-    cookies = getSessionFromGetOrPost(request.GET)
-    if not cookies.get('session'):
-        cookies = getSessionFromGetOrPost(request.body.decode())
+    # cookies = getSessionFromGetOrPost(request.GET)
+    # if not cookies.get('session'):
+    #     cookies = getSessionFromGetOrPost(request.body.decode())
 
-    data = json.loads(request.body.decode())
-    data.pop('session')
+    # data = json.loads(request.body.decode())
+    # data.pop('session')
 
-    content = requests.post(f"{baseUrl}user/change-password/", data=json.dumps(data), cookies=cookies, headers={
+    content = requests.post(f"{baseUrl}user/change-password/", data=request.body, cookies=request.COOKIES, headers={
             'Content-Type': 'application/json'
             })
 
@@ -203,14 +218,14 @@ def changePassword(request):
 
 @csrf_exempt
 def changePassword(request):
-    cookies = getSessionFromGetOrPost(request.GET)
-    if not cookies.get('session'):
-        cookies = getSessionFromGetOrPost(request.body.decode())
+    # cookies = getSessionFromGetOrPost(request.GET)
+    # if not cookies.get('session'):
+    #     cookies = getSessionFromGetOrPost(request.body.decode())
 
-    data = json.loads(request.body.decode())
-    data.pop('session')
+    # data = json.loads(request.body.decode())
+    # data.pop('session')
 
-    content = requests.post(f"{baseUrl}user/change-password/", data=json.dumps(data), cookies=cookies, headers={
+    content = requests.post(f"{baseUrl}user/change-password/", data=request.body, cookies=request.COOKIES, headers={
             'Content-Type': 'application/json'
             })
 
@@ -221,18 +236,18 @@ def changePassword(request):
 
 @csrf_exempt
 def mailSettings(request):
-    cookies = getSessionFromGetOrPost(request.GET)
-    if not cookies.get('session'):
-        cookies = getSessionFromGetOrPost(request.body.decode())
+    # cookies = getSessionFromGetOrPost(request.GET)
+    # if not cookies.get('session'):
+    #     cookies = getSessionFromGetOrPost(request.body.decode())
 
     if request.method == 'GET':
-        content = requests.get(f"{baseUrl}user/mail-settings/", cookies=cookies)
+        content = requests.get(f"{baseUrl}user/mail-settings/", cookies=request.COOKIES)
         # return JsonResponse(content.json(), safe=False)
 
     elif request.method == 'PUT':
         data = json.loads(request.body.decode())
         data.pop('session')
-        content = requests.put(f"{baseUrl}user/mail-settings/", data=json.dumps(data), cookies=cookies, headers={
+        content = requests.put(f"{baseUrl}user/mail-settings/", data=request.body, cookies=request.COOKIES, headers={
             'Content-Type': 'application/json'
             })
 
@@ -246,7 +261,7 @@ def mailSettings(request):
 # auth
 @csrf_exempt
 def login(request):
-    content = requests.post(f"{baseUrl}auth/login/", data=request.body.decode(), headers={
+    content = requests.post(f"{baseUrl}auth/login/", data=request.body, headers={
         'Content-Type': 'application/json'
         })
     response = JsonResponse(content.json(), safe=False)
@@ -277,30 +292,30 @@ def comment(request):
         # content: "o"
         # topic_id: 1
         # topic_type: "course"
-        cookies = getSessionFromGetOrPost(request.GET)
-        if not cookies.get('session'):
-            cookies = getSessionFromGetOrPost(request.body.decode())
+        # cookies = getSessionFromGetOrPost(request.GET)
+        # if not cookies.get('session'):
+        #     cookies = getSessionFromGetOrPost(request.body.decode())
 
         # data = request.body.decode()
-        content = requests.post(f"{baseUrl}comments/", data=request.body.decode(), cookies=cookies, headers={'Content-Type': 'application/json;charset=UTF-8'})
+        content = requests.post(f"{baseUrl}comments/", data=request.body, cookies=request.COOKIES, headers={'Content-Type': 'application/json;charset=UTF-8'})
         return JsonResponse(content.json(), safe=False) 
 
 def commentsUserstatus(request):
     # 需要cookies。
-    cookies = getSessionFromGetOrPost(request.GET)
-    if not cookies.get('session'):
-        cookies = getSessionFromGetOrPost(request.body.decode())
+    # cookies = getSessionFromGetOrPost(request.GET)
+    # if not cookies.get('session'):
+    #     cookies = getSessionFromGetOrPost(request.body.decode())
 
-    content = requests.get(f"{baseUrl}comments/userstatus/", params={'comment_ids': request.GET.get('comment_ids')}, cookies=cookies)
+    content = requests.get(f"{baseUrl}comments/userstatus/", params={'comment_ids': request.GET.get('comment_ids')}, cookies=request.COOKIES)
     return JsonResponse(content.json(), safe=False)
 
 @csrf_exempt
 def deleteComment(request, commentId):
-    cookies = getSessionFromGetOrPost(request.GET)
-    if not cookies.get('session'):
-        cookies = getSessionFromGetOrPost(request.body.decode())
+    # cookies = getSessionFromGetOrPost(request.GET)
+    # if not cookies.get('session'):
+    #     cookies = getSessionFromGetOrPost(request.body.decode())
 
-    response = requests.delete(f"{baseUrl}comments/{commentId}/", cookies=cookies)
+    response = requests.delete(f"{baseUrl}comments/{commentId}/", cookies=request.COOKIES)
 
     if int(response.status_code) == 200 or int(response.status_code) == 204:
         return HttpResponse()
@@ -334,11 +349,11 @@ def questionAnswers(request, questionId):
         content = requests.get(f"{baseUrl}questions/{questionId}/answers/", params=request.GET)
         return JsonResponse(content.json(), safe=False)
     else:
-        cookies = getSessionFromGetOrPost(request.GET)
-        if not cookies.get('session'):
-            cookies = getSessionFromGetOrPost(request.body.decode())
+        # cookies = getSessionFromGetOrPost(request.GET)
+        # if not cookies.get('session'):
+        #     cookies = getSessionFromGetOrPost(request.body.decode())
 
-        response = requests.post(f"{baseUrl}questions/{questionId}/answers/", data=request.body.decode(), cookies=cookies, headers={'Content-Type': 'application/json;charset=UTF-8'})
+        response = requests.post(f"{baseUrl}questions/{questionId}/answers/", data=request.body, cookies=request.COOKIES, headers={'Content-Type': 'application/json;charset=UTF-8'})
 
         return JsonResponse(response.json(), safe=False)        
 

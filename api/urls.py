@@ -43,7 +43,7 @@ urlpatterns = [
     path('v2/user/change-email/', views.changeEmail, name='changeEmail'),
     path('v2/user/change-password/', views.changePassword, name='changePassword'),
     path('v2/user/mail-settings/', views.mailSettings, name='mailSettings'),
-    
+
     path('v2/users/<int:userId>/', views.userInfoWithoutCookies, name='userWithoutCookies'),
     path('v2/users/<int:userId>/courses/', views.userStudiedCourses, name='userStudiedCourses'),
     path('v2/users/<int:userId>/questions/', views.userQuestionsForOneCourse, name='userQuestionsForOneCourse'),
@@ -52,5 +52,7 @@ urlpatterns = [
     path('v2/library/', views.library, name='library'),
     path('v2/library/books/', views.libraryBooks, name='libraryBooks'),
 
-    path('v2/search/', views.search, name='search')
+    path('v2/search/', views.search, name='search'),
+
+    path('v2/services/qiniu/token/', views.getQiniuToken, name='qiniuToken')
 ]
