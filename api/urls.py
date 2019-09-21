@@ -29,6 +29,8 @@ urlpatterns = [
     path('v2/paths', views.paths, name='paths'),
     path('v2/paths/<int:pathId>/', views.path, name='path'),
     path('v2/paths/<int:pathId>/stages/', views.stages, name='pathStages'),
+    path('v2/paths/<int:pathId>/join/', views.pathJoin, name='pathJoinAndDelete'),
+    path('v2/paths/userstatus/', views.pathUserstatus, name='pathUserstatus'),
 
     path('v2/comments/', views.comment, name='comments'),
     path('v2/comments/userstatus/', views.commentsUserstatus, name='commentsUserstatus'),
@@ -49,6 +51,7 @@ urlpatterns = [
     path('v2/users/<int:userId>/questions/', views.userQuestionsForOneCourse, name='userQuestionsForOneCourse'),
     path('v2/users/<int:userId>/paths/', views.userPaths, name='userPath'),
     path('v2/users/<int:userId>/labreports/', views.userLabreports, name='userLabreports'),
+    
     path('v2/library/', views.library, name='library'),
     path('v2/library/books/', views.libraryBooks, name='libraryBooks'),
 

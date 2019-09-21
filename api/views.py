@@ -334,6 +334,22 @@ def paths(request):
     content = requests.get(f"{baseUrl}paths")
     return JsonResponse(content.json(), safe=False)
 
+def pathUserstatus(request):
+    content = requests.get(f"{baseUrl}paths/userstatus/", params=request.GET, cookies=request.COOKIES)
+    return JsonResponse(content.json(), safe=False)
+
+@csrf_exempt
+def pathJoin(request, pathId):
+    if request.method == 'POST':
+        content = requests.post(f"{baseUrl}paths/{pathId}/join/", cookies=request.COOKIES)
+    elif request.method == 'DELETE':
+        content = requests.delete(f"{baseUrl}paths/{pathId}/join/", cookies=request.COOKIES)
+    
+    if int(content.status_code) < 299:
+        return HttpResponse(content.status_code)
+        
+    return JsonResponse(content.json(), safe=False)
+
 # qa
 def relatedQuestions(request, questionId):
     content = requests.get(f"{baseUrl}questions/{questionId}/related-questions/")
