@@ -37,7 +37,9 @@ urlpatterns = [
     path('v2/comments/<int:commentId>/', views.deleteComment, name='deleteComment'),
 
     path('v2/labreports/', views.labreports, name='labreports'),
-
+    path('v2/labreports/<int:reportId>/', views.labreport, name='labreport'),
+    path('v2/labreports/<int:reportId>/learn-data/', views.labreportLearnData, name='labreportLearnData'),
+    path('v2/labreports/<int:reportId>/related/', views.labreportRelated, name='labreportRelated'),
     path('v2/auth/login', views.login, name='login'),
 
     path('v2/user/', views.userInfo, name='user'),

@@ -347,7 +347,7 @@ def pathJoin(request, pathId):
     
     if int(content.status_code) < 299:
         return HttpResponse(content.status_code)
-        
+
     return JsonResponse(content.json(), safe=False)
 
 # qa
@@ -429,10 +429,24 @@ def courses(request):
     content = requests.get("http://www.shiyanlou.com/api/v2/courses/", params=request.GET)
     return JsonResponse(content.json(), safe=False)
 
+# reports
 def labreports(request):
     content = requests.get(f"{baseUrl}labreports/", params=request.GET)
     return JsonResponse(content.json(), safe=False)
 
+def labreport(request, reportId):
+    content = requests.get(f"{baseUrl}labreports/{reportId}/", params=request.GET)
+    return JsonResponse(content.json(), safe=False)
+
+def labreportLearnData(request, reportId):
+    content = requests.get(f"{baseUrl}labreports/{reportId}/learn-data/", params=request.GET)
+    return JsonResponse(content.json(), safe=False)
+
+def labreportRelated(request, reportId):
+    content = requests.get(f"{baseUrl}labreports/{reportId}/related/", params=request.GET)
+    return JsonResponse(content.json(), safe=False)
+
+# library
 def library(request):
     content = requests.get(f"{baseUrl}library/")
     return JsonResponse(content.json(), safe=False)
@@ -441,6 +455,7 @@ def libraryBooks(request):
     content = requests.get(f"{baseUrl}library/books/", params=request.GET)
     return JsonResponse(content.json(), safe=False)
 
+# search
 def search(request):
     content = requests.get(f"{baseUrl}search/", params=request.GET)
     return JsonResponse(content.json(), safe=False)
