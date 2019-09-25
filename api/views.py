@@ -382,9 +382,14 @@ def recentActivities(request):
     content = requests.get(f"{baseUrl}fringe/recent-activities/")
     return JsonResponse(content.json(), safe=False)
 
+@csrf_exempt
 def questions(request):
-    content = requests.get(f"{baseUrl}questions/", params=request.GET)
-    return JsonResponse(content.json(), safe=False)
+    if request.method == "GET":
+        content = requests.get(f"{baseUrl}questions/", params=request.GET)
+        return JsonResponse(content.json(), safe=False)
+    elif request.method == 'POST':
+        content = requests.post(f"{baseUrl}questions/", data=request.body, cookies=request.COOKIES, headers={'Content-Type': 'application/json;charset=UTF-8'})
+        return JsonResponse(content.json(), safe=False)
 
 
 # home
