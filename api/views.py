@@ -245,8 +245,6 @@ def mailSettings(request):
         # return JsonResponse(content.json(), safe=False)
 
     elif request.method == 'PUT':
-        data = json.loads(request.body.decode())
-        data.pop('session')
         content = requests.put(f"{baseUrl}user/mail-settings/", data=request.body, cookies=request.COOKIES, headers={
             'Content-Type': 'application/json'
             })
