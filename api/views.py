@@ -46,13 +46,7 @@ def getQiniuToken(request):
 def courseUserStatus(request):
     # courses/userstatus/?course_ids=1
     # 需要cookies.
-    cookies = request.COOKIES
-    if not cookies.get('session'):
-        params = {'user_id': request.GET.get('user_id'), 'course_ids': request.GET.get('course_ids')}
-    else:
-        params = {'course_ids': request.GET.get('course_ids')}
-
-    content = requests.get(f"{baseUrl}courses/userstatus/", params=params, cookies=request.COOKIES)
+    content = requests.get(f"{baseUrl}courses/userstatus/", params=request.GET, cookies=request.COOKIES)
 
     return JsonResponse(content.json(), safe=False)
 
@@ -62,10 +56,6 @@ def follow(request, courseId):
     # DELETE 则是取消关注
     # courses/1/follow/
     # 需要cookies.
-    # cookies = getSessionFromGetOrPost(request.GET)
-    # if not cookies.get('session'):
-    #     cookies = getSessionFromGetOrPost(request.body.decode())
-
     if request.method == "PUT":
         response = requests.put(f"{baseUrl}courses/{courseId}/follow", cookies=request.COOKIES)
     else:
@@ -84,9 +74,6 @@ def join(request, courseId):
     # 需要用POST提交.
     # 需要cookies.
     # 无返回数据，200应该就是加入成功了。
-    # cookies = getSessionFromGetOrPost(request.GET)
-    # if not cookies.get('session'):
-    #     cookies = getSessionFromGetOrPost(request.body.decode())
 
     content = requests.post(f"{baseUrl}courses/{courseId}/join/", cookies=request.COOKIES)    
     # return JsonResponse(content.json(), safe=False)
@@ -105,22 +92,13 @@ def labtask(request):
 def userInfo(request):
     # user/
     # 仅需cookies, cookies 也是必须的。
-    # cookies = getSessionFromGetOrPost(request.GET)
-    # if not cookies.get('session'):
-    #     cookies = getSessionFromGetOrPost(request.body.decode())
-
     if request.method == 'GET':
         content = requests.get(f"{baseUrl}user/", cookies=request.COOKIES)
         return JsonResponse(content.json(), safe=False)
     elif request.method == 'PATCH':
-        # data = request.body.decode()
-        # data = json.loads(data)
-        # data.pop('session')
-        # print(data)
         content = requests.patch(f"{baseUrl}user/", data=request.body, cookies=request.COOKIES, headers={
             'Content-Type': 'application/json'
             })
-        # print(content.text)
         if int(content.status_code) == 200:
             return JsonResponse(content.json(), safe=False)
         else:
