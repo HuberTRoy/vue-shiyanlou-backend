@@ -57,6 +57,8 @@ urlpatterns = [
     path('v2/library/', views.library, name='library'),
     path('v2/library/books/', views.libraryBooks, name='libraryBooks'),
 
+    path('v2/live-courses/', views.liveCourses, name="liveCourses"),
+
     path('v2/search/', views.search, name='search'),
 
     path('v2/services/qiniu/token/', views.getQiniuToken, name='qiniuToken')

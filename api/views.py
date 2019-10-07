@@ -440,3 +440,8 @@ def libraryBooks(request):
 def search(request):
     content = requests.get(f"{baseUrl}search/", params=request.GET)
     return JsonResponse(content.json(), safe=False)
+
+# live
+def liveCourses(request):
+    content = requests.get(f"{baseUrl}live-courses/", params=request.GET)
+    return JsonResponse(content.json(), safe=False)
