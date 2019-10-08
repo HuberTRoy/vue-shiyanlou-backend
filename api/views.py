@@ -445,3 +445,29 @@ def search(request):
 def liveCourses(request):
     content = requests.get(f"{baseUrl}live-courses/", params=request.GET)
     return JsonResponse(content.json(), safe=False)
+
+# contests
+def contests(request):
+    content = requests.get(f"{baseUrl}contests/", params=request.GET)
+    return JsonResponse(content.json(), safe=False)
+
+def contestRank(request, contestName):
+    content = requests.get(f"{baseUrl}contests/{contestName}/rank/", params=request.GET)
+    return JsonResponse(content.json(), safe=False)
+
+def contestsRank(request):
+    content = requests.get(f"{baseUrl}contests/rank/", params=request.GET)
+    return JsonResponse(content.json(), safe=False)
+
+# challenges
+def challenges(request):
+    content = requests.get(f"{baseUrl}challenges/", params=request.GET)
+    return JsonResponse(content.json(), safe=False)
+
+def challengesTags(request):
+    content = requests.get(f"{baseUrl}challenges/tags/")
+    return JsonResponse(content.json(), safe=False)
+
+def challengesUserStatus(request):
+    content = request.get(f"{baseUrl}challenges/userstatus/", params=request.GET)
+    return JsonResponse(content.json(), safe=False)

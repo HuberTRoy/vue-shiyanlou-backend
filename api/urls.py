@@ -57,7 +57,15 @@ urlpatterns = [
     path('v2/library/', views.library, name='library'),
     path('v2/library/books/', views.libraryBooks, name='libraryBooks'),
 
-    path('v2/live-courses/', views.liveCourses, name="liveCourses"),
+    path('v2/live-courses/', views.liveCourses, name='liveCourses'),
+
+    path('v2/challenges/', views.challenges, name='challenges'),
+    path('v2/challenges/tags/', views.challengesTags, name='challengesTags'),
+    path('v2/challenges/userstatus/', views.challengesUserStatus, name='challengesUserStatus'),
+
+    path('v2/contests/', views.contests, name='contests'),
+    path('v2/contests/<str:contestName>/rank/', views.contestRank, name='contestRank'),
+    path('v2/contests/rank/', views.contestsRank, name='contestsRank'),
 
     path('v2/search/', views.search, name='search'),
 
