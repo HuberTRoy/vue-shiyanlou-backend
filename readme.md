@@ -35,6 +35,7 @@ python manage.py runserver
 - [x] 课程报告。
 - [x] 站内搜索。
 - [x] 直播课程。
+- [x] 挑战。
 - [x] 登录。
 - [x] 用户信息（包括登录和非登陆）。
 - [x] 修改密码。
@@ -42,4 +43,4 @@ python manage.py runserver
 - [x] 修改社区通知。
 - [x] 上传图片。
 
-目前一共46个API。
+目前一共53个API。
