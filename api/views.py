@@ -5,25 +5,31 @@ import json
 
 baseUrl = "https://www.shiyanlou.com/api/v2/"
 
-# localhost 不能携带cookies, 不重写 requests.get/post 强行携带cookies 了。
-# 只按需给某些需要cookies的链接带上cookies吧。
-# 当然用cookies不能传递,还是需要带在POST/GET参数中。
+# 这里一开始没有预留接口，做一个覆盖方式的header重写。
 
-# === 里面是登录后解锁的内容。
+post = requests.post
+get = requests.get
 
-# 这样有安全性问题.
-# # localhost下也没法传递cookies.
-# def getSessionFromGetOrPost(data):
+def addTokenHeader(methods='GET'):
+    # 装饰器
+    def inner(*args, **kwargs):
+        if not kwargs.get('headers'):
+            kwargs['headers'] = {}
 
-#     try:
-#         data.get('session')
-#     except:
-#         data = json.loads(data)
+        # 实验楼添加了一个token，目前不知道如何生成，直接抓取的生成好的。
+        # 生效时间未知。
+        # 限制条件未知。
+        kwargs['headers']['x-syl-client-token'] = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJNb0h1bWZGeWt3bFdmT2JoNVVSSXpvNEdrV0dHVFZpdSIsImlhdCI6MTU3MzE3OTk0My4wMzQsImV4cCI6MTU3MzI2NjM0My4wMzR9.w29yns2kqiceR4EGSL418FYqdekX-9wB490Bjmme9Mw'
+        
+        if methods == 'GET':
+            return get(*args, **kwargs)
+        elif methods == 'POST':
+            return post(*args, **kwargs)
 
-#     if data:
-#         return {'session': data.get('session')}
-    
-#     return {'session': ''}
+    return inner
+
+requests.post = addTokenHeader(methods='POST')
+requests.get = addTokenHeader(methods='GET')
 
 
 # 一些额外的东西
@@ -74,7 +80,6 @@ def join(request, courseId):
     # 需要用POST提交.
     # 需要cookies.
     # 无返回数据，200应该就是加入成功了。
-
     content = requests.post(f"{baseUrl}courses/{courseId}/join/", cookies=request.COOKIES)    
     # return JsonResponse(content.json(), safe=False)
     if int(content.status_code) == 200 or int(content.status_code) == 204:
