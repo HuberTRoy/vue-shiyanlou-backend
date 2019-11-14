@@ -1,7 +1,25 @@
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-import requests
+
+import re
 import json
+
+import requests
+
+from .utils.timer import RepeatedTimer
+
+
+def getToken():
+    t = requests.get('https://www.shiyanlou.com')
+
+    if t.text:
+        # (?# print(re.findall(r'token:"(.*?)"', t.text)[0]))
+        return re.findall(r'token:"(.*?)"', t.text)[0]
+    else:
+        print('No Token')
+        return ''
+
+token = ''
 
 baseUrl = "https://www.shiyanlou.com/api/v2/"
 
@@ -13,18 +31,34 @@ get = requests.get
 def addTokenHeader(methods='GET'):
     # 装饰器
     def inner(*args, **kwargs):
+        global token
         if not kwargs.get('headers'):
             kwargs['headers'] = {}
 
         # 实验楼添加了一个token，目前不知道如何生成，直接抓取的生成好的。
         # 生效时间未知。
         # 限制条件未知。
-        kwargs['headers']['x-syl-client-token'] = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJNb0h1bWZGeWt3bFdmT2JoNVVSSXpvNEdrV0dHVFZpdSIsImlhdCI6MTU3MzE3OTk0My4wMzQsImV4cCI6MTU3MzI2NjM0My4wMzR9.w29yns2kqiceR4EGSL418FYqdekX-9wB490Bjmme9Mw'
+        kwargs['headers']['x-syl-client-token'] = token
         
         if methods == 'GET':
-            return get(*args, **kwargs)
+            result = get(*args, **kwargs)
         elif methods == 'POST':
-            return post(*args, **kwargs)
+            result = post(*args, **kwargs)
+
+        try:
+            if result.json()['client_authentication_failed']:
+                # 验证token失败，重新尝试请求token
+                token = getToken()
+                kwargs['headers']['x-syl-client-token'] = token                
+                if methods == 'GET':
+                    result = get(*args, **kwargs)
+                elif methods == 'POST':
+                    result = post(*args, **kwargs)
+
+        except:
+            pass
+
+        return result
 
     return inner
 
