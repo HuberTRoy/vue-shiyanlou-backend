@@ -6,9 +6,6 @@ import json
 
 import requests
 
-from .utils.timer import RepeatedTimer
-
-
 def getToken():
     t = requests.get('https://www.shiyanlou.com')
 
