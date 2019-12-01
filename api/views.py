@@ -73,7 +73,7 @@ def getQiniuToken(request):
     # data = json.loads(request.body.decode())
     # data.pop('session')
 
-    content = requests.post(f'{baseUrl}services/qiniu/token/'.format(baseUrl=baseUrl), data=request.body, cookies=request.COOKIES, headers={
+    content = requests.post('{baseUrl}services/qiniu/token/'.format(baseUrl=baseUrl), data=request.body, cookies=request.COOKIES, headers={
         'Content-Type': 'application/json;charset=UTF-8'
         })
     return JsonResponse(content.json(), safe=False)
