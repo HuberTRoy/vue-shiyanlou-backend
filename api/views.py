@@ -73,7 +73,7 @@ def getQiniuToken(request):
     # data = json.loads(request.body.decode())
     # data.pop('session')
 
-    content = requests.post(f'{baseUrl}services/qiniu/token/', data=request.body, cookies=request.COOKIES, headers={
+    content = requests.post(f'{baseUrl}services/qiniu/token/'.format(baseUrl=baseUrl), data=request.body, cookies=request.COOKIES, headers={
         'Content-Type': 'application/json;charset=UTF-8'
         })
     return JsonResponse(content.json(), safe=False)
@@ -83,7 +83,7 @@ def getQiniuToken(request):
 def courseUserStatus(request):
     # courses/userstatus/?course_ids=1
     # 需要cookies.
-    content = requests.get(f"{baseUrl}courses/userstatus/", params=request.GET, cookies=request.COOKIES)
+    content = requests.get("{baseUrl}courses/userstatus/".format(baseUrl=baseUrl), params=request.GET, cookies=request.COOKIES)
 
     return JsonResponse(content.json(), safe=False)
 
@@ -94,9 +94,9 @@ def follow(request, courseId):
     # courses/1/follow/
     # 需要cookies.
     if request.method == "PUT":
-        response = requests.put(f"{baseUrl}courses/{courseId}/follow", cookies=request.COOKIES)
+        response = requests.put("{baseUrl}courses/{courseId}/follow".format(baseUrl=baseUrl, courseId=courseId), cookies=request.COOKIES)
     else:
-        response = requests.delete(f"{baseUrl}courses/{courseId}/follow", cookies=request.COOKIES)
+        response = requests.delete("{baseUrl}courses/{courseId}/follow".format(baseUrl=baseUrl, courseId=courseId), cookies=request.COOKIES)
 
     if int(response.status_code) == 200 or int(response.status_code) == 204:
         return HttpResponse()
@@ -111,7 +111,7 @@ def join(request, courseId):
     # 需要用POST提交.
     # 需要cookies.
     # 无返回数据，200应该就是加入成功了。
-    content = requests.post(f"{baseUrl}courses/{courseId}/join/", cookies=request.COOKIES)    
+    content = requests.post("{baseUrl}courses/{courseId}/join/".format(baseUrl=baseUrl), cookies=request.COOKIES)    
     # return JsonResponse(content.json(), safe=False)
     if int(content.status_code) == 200 or int(content.status_code) == 204:
         return HttpResponse()
@@ -129,10 +129,10 @@ def userInfo(request):
     # user/
     # 仅需cookies, cookies 也是必须的。
     if request.method == 'GET':
-        content = requests.get(f"{baseUrl}user/", cookies=request.COOKIES)
+        content = requests.get("{baseUrl}user/".format(baseUrl=baseUrl), cookies=request.COOKIES)
         return JsonResponse(content.json(), safe=False)
     elif request.method == 'PATCH':
-        content = requests.patch(f"{baseUrl}user/", data=request.body, cookies=request.COOKIES, headers={
+        content = requests.patch("{baseUrl}user/".format(baseUrl=baseUrl), data=request.body, cookies=request.COOKIES, headers={
             'Content-Type': 'application/json'
             })
         if int(content.status_code) == 200:
@@ -141,14 +141,14 @@ def userInfo(request):
             return HttpResponse(content.status_code)
 
 def userInfoWithoutCookies(request, userId):
-    content = requests.get(f"{baseUrl}users/{userId}/")
+    content = requests.get("{baseUrl}users/{userId}/".format(baseUrl=baseUrl, userId=userId))
 
     return JsonResponse(content.json(), safe=False)   
 
 def userStudiedCourses(request, userId):
     # users/1146797/courses/?page_size=5&type=studied
     # 这个无需 cookies.
-    content = requests.get(f"{baseUrl}users/{userId}/courses", params=request.GET)
+    content = requests.get("{baseUrl}users/{userId}/courses".format(baseUrl=baseUrl, userId=userId), params=request.GET)
     return JsonResponse(content.json(), safe=False)
 
 def userFollowCourses(request):
@@ -164,13 +164,13 @@ def userBoughtCourses(request):
 def userPaths(request, userId):
     # users/1146797/paths/
     # 无需 cookies.
-    content = requests.get(f"{baseUrl}users/{userId}/paths/")
+    content = requests.get("{baseUrl}users/{userId}/paths/".format(baseUrl=baseUrl, userId=userId))
     return JsonResponse(content.json(), safe=False)
 
 def userLabreports(request, userId):
     # users/1146797/labreports/
     # 无需 cookies.
-    content = requests.get(f"{baseUrl}users/{userId}/labreports/")
+    content = requests.get("{baseUrl}users/{userId}/labreports/".format(baseUrl=baseUrl, userId=userId))
     return JsonResponse(content.json(), safe=False)
 
 def userQuestion(request):
@@ -179,7 +179,7 @@ def userQuestion(request):
     pass
 
 def userQuestionsForOneCourse(request, userId):
-    content = requests.get(f"{baseUrl}users/{userId}/questions/", params=request.GET)
+    content = requests.get("{baseUrl}users/{userId}/questions/".format(baseUrl=baseUrl, userId=userId), params=request.GET)
     return JsonResponse(content.json(), safe=False)
 
 @csrf_exempt
@@ -189,9 +189,9 @@ def checkin(request):
     #     cookies = getSessionFromGetOrPost(request.body.decode())
 
     if request.method == 'POST':
-        content = requests.post(f"{baseUrl}user/checkin/", cookies=request.COOKIES)
+        content = requests.post("{baseUrl}user/checkin/".format(baseUrl=baseUrl), cookies=request.COOKIES)
     elif request.method == 'GET':
-        content = requests.get(f"{baseUrl}user/checkin/", cookies=request.COOKIES)
+        content = requests.get("{baseUrl}user/checkin/".format(baseUrl=baseUrl), cookies=request.COOKIES)
     
     return JsonResponse(content.json(), safe=False)
 
@@ -204,7 +204,7 @@ def changeEmail(request):
     # data = json.loads(request.body.decode())
     # data.pop('session')
 
-    content = requests.post(f"{baseUrl}user/change-email/", data=request.body, cookies=request.COOKIES, headers={
+    content = requests.post("{baseUrl}user/change-email/".format(baseUrl=baseUrl), data=request.body, cookies=request.COOKIES, headers={
             'Content-Type': 'application/json'
             })
     try:
@@ -221,7 +221,7 @@ def changePassword(request):
     # data = json.loads(request.body.decode())
     # data.pop('session')
 
-    content = requests.post(f"{baseUrl}user/change-password/", data=request.body, cookies=request.COOKIES, headers={
+    content = requests.post("{baseUrl}user/change-password/".format(baseUrl=baseUrl), data=request.body, cookies=request.COOKIES, headers={
             'Content-Type': 'application/json'
             })
 
@@ -239,7 +239,7 @@ def changePassword(request):
     # data = json.loads(request.body.decode())
     # data.pop('session')
 
-    content = requests.post(f"{baseUrl}user/change-password/", data=request.body, cookies=request.COOKIES, headers={
+    content = requests.post("{baseUrl}user/change-password/".format(baseUrl=baseUrl), data=request.body, cookies=request.COOKIES, headers={
             'Content-Type': 'application/json'
             })
 
@@ -255,11 +255,11 @@ def mailSettings(request):
     #     cookies = getSessionFromGetOrPost(request.body.decode())
 
     if request.method == 'GET':
-        content = requests.get(f"{baseUrl}user/mail-settings/", cookies=request.COOKIES)
+        content = requests.get("{baseUrl}user/mail-settings/".format(baseUrl=baseUrl), cookies=request.COOKIES)
         # return JsonResponse(content.json(), safe=False)
 
     elif request.method == 'PUT':
-        content = requests.put(f"{baseUrl}user/mail-settings/", data=request.body, cookies=request.COOKIES, headers={
+        content = requests.put("{baseUrl}user/mail-settings/".format(baseUrl=baseUrl), data=request.body, cookies=request.COOKIES, headers={
             'Content-Type': 'application/json'
             })
 
@@ -273,7 +273,7 @@ def mailSettings(request):
 # auth
 @csrf_exempt
 def login(request):
-    content = requests.post(f"{baseUrl}auth/login/", data=request.body, headers={
+    content = requests.post("{baseUrl}auth/login/".format(baseUrl=baseUrl), data=request.body, headers={
         'Content-Type': 'application/json'
         })
     response = JsonResponse(content.json(), safe=False)
@@ -297,7 +297,7 @@ def login(request):
 def comment(request):
     # 以 GET 提交。
     if request.method == 'GET':
-        content = requests.get(f"{baseUrl}comments/", params=request.GET)
+        content = requests.get("{baseUrl}comments/".format(baseUrl=baseUrl), params=request.GET)
         return JsonResponse(content.json(), safe=False)
     # 以 POST 提交 需要 cookies.
     elif request.method == 'POST':
@@ -309,7 +309,7 @@ def comment(request):
         #     cookies = getSessionFromGetOrPost(request.body.decode())
 
         # data = request.body.decode()
-        content = requests.post(f"{baseUrl}comments/", data=request.body, cookies=request.COOKIES, headers={'Content-Type': 'application/json;charset=UTF-8'})
+        content = requests.post("{baseUrl}comments/".format(baseUrl=baseUrl), data=request.body, cookies=request.COOKIES, headers={'Content-Type': 'application/json;charset=UTF-8'})
         return JsonResponse(content.json(), safe=False) 
 
 def commentsUserstatus(request):
@@ -318,7 +318,7 @@ def commentsUserstatus(request):
     # if not cookies.get('session'):
     #     cookies = getSessionFromGetOrPost(request.body.decode())
 
-    content = requests.get(f"{baseUrl}comments/userstatus/", params={'comment_ids': request.GET.get('comment_ids')}, cookies=request.COOKIES)
+    content = requests.get("{baseUrl}comments/userstatus/".format(baseUrl=baseUrl), params={'comment_ids': request.GET.get('comment_ids')}, cookies=request.COOKIES)
     return JsonResponse(content.json(), safe=False)
 
 @csrf_exempt
@@ -327,7 +327,7 @@ def deleteComment(request, commentId):
     # if not cookies.get('session'):
     #     cookies = getSessionFromGetOrPost(request.body.decode())
 
-    response = requests.delete(f"{baseUrl}comments/{commentId}/", cookies=request.COOKIES)
+    response = requests.delete("{baseUrl}comments/{commentId}/".format(baseUrl=baseUrl, commentId=commentId), cookies=request.COOKIES)
 
     if int(response.status_code) == 200 or int(response.status_code) == 204:
         return HttpResponse()
@@ -335,27 +335,27 @@ def deleteComment(request, commentId):
 
 # path
 def stages(request, pathId):
-    content = requests.get(f"{baseUrl}paths/{pathId}/stages")
+    content = requests.get("{baseUrl}paths/{pathId}/stages".format(baseUrl=baseUrl, pathId=pathId))
     return JsonResponse(content.json(), safe=False)
 
 def path(request, pathId):
-    content = requests.get(f"{baseUrl}paths/{pathId}")
+    content = requests.get("{baseUrl}paths/{pathId}".format(baseUrl=baseUrl, pathId=pathId))
     return JsonResponse(content.json(), safe=False)
 
 def paths(request):
-    content = requests.get(f"{baseUrl}paths")
+    content = requests.get("{baseUrl}paths".format(baseUrl=baseUrl))
     return JsonResponse(content.json(), safe=False)
 
 def pathUserstatus(request):
-    content = requests.get(f"{baseUrl}paths/userstatus/", params=request.GET, cookies=request.COOKIES)
+    content = requests.get("{baseUrl}paths/userstatus/".format(baseUrl=baseUrl), params=request.GET, cookies=request.COOKIES)
     return JsonResponse(content.json(), safe=False)
 
 @csrf_exempt
 def pathJoin(request, pathId):
     if request.method == 'POST':
-        content = requests.post(f"{baseUrl}paths/{pathId}/join/", cookies=request.COOKIES)
+        content = requests.post("{baseUrl}paths/{pathId}/join/".format(baseUrl=baseUrl, pathId=pathId), cookies=request.COOKIES)
     elif request.method == 'DELETE':
-        content = requests.delete(f"{baseUrl}paths/{pathId}/join/", cookies=request.COOKIES)
+        content = requests.delete("{baseUrl}paths/{pathId}/join/".format(baseUrl=baseUrl, pathId=pathId), cookies=request.COOKIES)
     
     if int(content.status_code) < 299:
         return HttpResponse(content.status_code)
@@ -364,65 +364,65 @@ def pathJoin(request, pathId):
 
 # qa
 def relatedQuestions(request, questionId):
-    content = requests.get(f"{baseUrl}questions/{questionId}/related-questions/")
+    content = requests.get("{baseUrl}questions/{questionId}/related-questions/".format(baseUrl=baseUrl, questionId=questionId))
     return JsonResponse(content.json(), safe=False)
 
 def question(request, questionId):
-    content = requests.get(f"{baseUrl}questions/{questionId}")
+    content = requests.get("{baseUrl}questions/{questionId}".format(baseUrl=baseUrl, questionId=questionId))
     return JsonResponse(content.json(), safe=False)
 
 @csrf_exempt
 def questionAnswers(request, questionId):
     if request.method == "GET":
-        content = requests.get(f"{baseUrl}questions/{questionId}/answers/", params=request.GET)
+        content = requests.get("{baseUrl}questions/{questionId}/answers/".format(baseUrl=baseUrl, questionId=questionId), params=request.GET)
         return JsonResponse(content.json(), safe=False)
     else:
         # cookies = getSessionFromGetOrPost(request.GET)
         # if not cookies.get('session'):
         #     cookies = getSessionFromGetOrPost(request.body.decode())
 
-        response = requests.post(f"{baseUrl}questions/{questionId}/answers/", data=request.body, cookies=request.COOKIES, headers={'Content-Type': 'application/json;charset=UTF-8'})
+        response = requests.post("{baseUrl}questions/{questionId}/answers/".format(baseUrl=baseUrl, questionId=questionId), data=request.body, cookies=request.COOKIES, headers={'Content-Type': 'application/json;charset=UTF-8'})
 
         return JsonResponse(response.json(), safe=False)        
 
 
 def recentLouplus(request):
-    content = requests.get(f"{baseUrl}fringe/recent-louplus-courses/")
+    content = requests.get("{baseUrl}fringe/recent-louplus-courses/".format(baseUrl=baseUrl))
     return JsonResponse(content.json(), safe=False)
 
 def recentActivities(request):
-    content = requests.get(f"{baseUrl}fringe/recent-activities/")
+    content = requests.get("{baseUrl}fringe/recent-activities/".format(baseUrl=baseUrl))
     return JsonResponse(content.json(), safe=False)
 
 @csrf_exempt
 def questions(request):
     if request.method == "GET":
-        content = requests.get(f"{baseUrl}questions/", params=request.GET)
+        content = requests.get("{baseUrl}questions/".format(baseUrl=baseUrl), params=request.GET)
         return JsonResponse(content.json(), safe=False)
     elif request.method == 'POST':
-        content = requests.post(f"{baseUrl}questions/", data=request.body, cookies=request.COOKIES, headers={'Content-Type': 'application/json;charset=UTF-8'})
+        content = requests.post("{baseUrl}questions/".format(baseUrl=baseUrl), data=request.body, cookies=request.COOKIES, headers={'Content-Type': 'application/json;charset=UTF-8'})
         return JsonResponse(content.json(), safe=False)
 
 
 # home
 def indexPaths(request):
-    content = requests.get(f"{baseUrl}index/paths")
+    content = requests.get("{baseUrl}index/paths".format(baseUrl=baseUrl))
     return JsonResponse(content.json(), safe=False)
 
 def indexBootcamps(request):
-    content = requests.get(f"{baseUrl}index/bootcamps")
+    content = requests.get("{baseUrl}index/bootcamps".format(baseUrl=baseUrl))
     return JsonResponse(content.json(), safe=False)
 
 def classficationCourses(request):
-    content = requests.get(f"{baseUrl}index/classfication-courses/")
+    content = requests.get("{baseUrl}index/classfication-courses/".format(baseUrl=baseUrl))
     return JsonResponse(content.json(), safe=False)
 
 def louplus(request):
-    content = requests.get(f"{baseUrl}index/louplus/")
+    content = requests.get("{baseUrl}index/louplus/".format(baseUrl=baseUrl))
     return JsonResponse(content.json(), safe=False)
 
 def indexBanner(request):
-    content = requests.get(f"{baseUrl}index/banner-pictures/")
+    content = requests.get("{baseUrl}index/banner-pictures/".format(baseUrl=baseUrl))
     return JsonResponse(content.json(), safe=False)
 
 def indexCategories(request):
@@ -431,11 +431,11 @@ def indexCategories(request):
 
 # courses 
 def courseLabs(request, courseId):
-    content = requests.get(f"{baseUrl}courses/{courseId}/labs")
+    content = requests.get("{baseUrl}courses/{courseId}/labs".format(baseUrl=baseUrl, courseId=courseId))
     return JsonResponse(content.json(), safe=False)
 
 def course(request, courseId):
-    content = requests.get(f"{baseUrl}courses/{courseId}")
+    content = requests.get("{baseUrl}courses/{courseId}".format(baseUrl=baseUrl, courseId=courseId))
     return JsonResponse(content.json(), safe=False)
 
 def categories(request):
@@ -448,62 +448,62 @@ def courses(request):
 
 # reports
 def labreports(request):
-    content = requests.get(f"{baseUrl}labreports/", params=request.GET)
+    content = requests.get("{baseUrl}labreports/".format(baseUrl=baseUrl), params=request.GET)
     return JsonResponse(content.json(), safe=False)
 
 def labreport(request, reportId):
-    content = requests.get(f"{baseUrl}labreports/{reportId}/", params=request.GET)
+    content = requests.get("{baseUrl}labreports/{reportId}/".format(baseUrl=baseUrl, reportId=reportId), params=request.GET)
     return JsonResponse(content.json(), safe=False)
 
 def labreportLearnData(request, reportId):
-    content = requests.get(f"{baseUrl}labreports/{reportId}/learn-data/", params=request.GET)
+    content = requests.get("{baseUrl}labreports/{reportId}/learn-data/".format(baseUrl=baseUrl, reportId=reportId), params=request.GET)
     return JsonResponse(content.json(), safe=False)
 
 def labreportRelated(request, reportId):
-    content = requests.get(f"{baseUrl}labreports/{reportId}/related/", params=request.GET)
+    content = requests.get("{baseUrl}labreports/{reportId}/related/".format(baseUrl=baseUrl, reportId=reportId), params=request.GET)
     return JsonResponse(content.json(), safe=False)
 
 # library
 def library(request):
-    content = requests.get(f"{baseUrl}library/")
+    content = requests.get("{baseUrl}library/".format(baseUrl=baseUrl))
     return JsonResponse(content.json(), safe=False)
 
 def libraryBooks(request):
-    content = requests.get(f"{baseUrl}library/books/", params=request.GET)
+    content = requests.get("{baseUrl}library/books/".format(baseUrl=baseUrl), params=request.GET)
     return JsonResponse(content.json(), safe=False)
 
 # search
 def search(request):
-    content = requests.get(f"{baseUrl}search/", params=request.GET)
+    content = requests.get("{baseUrl}search/".format(baseUrl=baseUrl), params=request.GET)
     return JsonResponse(content.json(), safe=False)
 
 # live
 def liveCourses(request):
-    content = requests.get(f"{baseUrl}live-courses/", params=request.GET)
+    content = requests.get("{baseUrl}live-courses/".format(baseUrl=baseUrl), params=request.GET)
     return JsonResponse(content.json(), safe=False)
 
 # contests
 def contests(request):
-    content = requests.get(f"{baseUrl}contests/", params=request.GET)
+    content = requests.get("{baseUrl}contests/".format(baseUrl=baseUrl), params=request.GET)
     return JsonResponse(content.json(), safe=False)
 
 def contestRank(request, contestName):
-    content = requests.get(f"{baseUrl}contests/{contestName}/rank/", params=request.GET)
+    content = requests.get("{baseUrl}contests/{contestName}/rank/".format(baseUrl=baseUrl, contestName=contestName), params=request.GET)
     return JsonResponse(content.json(), safe=False)
 
 def contestsRank(request):
-    content = requests.get(f"{baseUrl}contests/rank/", params=request.GET)
+    content = requests.get("{baseUrl}contests/rank/".format(baseUrl=baseUrl), params=request.GET)
     return JsonResponse(content.json(), safe=False)
 
 # challenges
 def challenges(request):
-    content = requests.get(f"{baseUrl}challenges/", params=request.GET)
+    content = requests.get("{baseUrl}challenges/".format(baseUrl=baseUrl), params=request.GET)
     return JsonResponse(content.json(), safe=False)
 
 def challengesTags(request):
-    content = requests.get(f"{baseUrl}challenges/tags/")
+    content = requests.get("{baseUrl}challenges/tags/".format(baseUrl=baseUrl))
     return JsonResponse(content.json(), safe=False)
 
 def challengesUserStatus(request):
-    content = request.get(f"{baseUrl}challenges/userstatus/", params=request.GET)
+    content = request.get("{baseUrl}challenges/userstatus/".format(baseUrl=baseUrl), params=request.GET)
     return JsonResponse(content.json(), safe=False)
