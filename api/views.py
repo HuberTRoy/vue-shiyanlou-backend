@@ -18,7 +18,7 @@ def getToken():
 
 token = ''
 
-baseUrl = "https://www.shiyanlou.com/api/v2/"
+baseUrl = "https://www.lanqiao.cn/api/v2/"
 
 # 这里一开始没有预留接口，做一个覆盖方式的header重写。
 
@@ -59,8 +59,8 @@ def addTokenHeader(methods='GET'):
 
     return inner
 
-requests.post = addTokenHeader(methods='POST')
-requests.get = addTokenHeader(methods='GET')
+# requests.post = addTokenHeader(methods='POST')
+# requests.get = addTokenHeader(methods='GET')
 
 
 # 一些额外的东西
@@ -426,7 +426,8 @@ def indexBanner(request):
     return JsonResponse(content.json(), safe=False)
 
 def indexCategories(request):
-    content = requests.get("http://www.shiyanlou.com/api/v2/index/categories/")
+    content = requests.get("{baseUrl}index/categories/".format(baseUrl=baseUrl))
+    print(content.headers)
     return JsonResponse(content.json(), safe=False)
 
 # courses 
@@ -439,11 +440,11 @@ def course(request, courseId):
     return JsonResponse(content.json(), safe=False)
 
 def categories(request):
-    content = requests.get("http://www.shiyanlou.com/api/v2/courses/categories/")
+    content = requests.get("{baseUrl}courses/categories/".format(baseUrl=baseUrl))
     return JsonResponse(content.json(), safe=False)
 
 def courses(request):
-    content = requests.get("http://www.shiyanlou.com/api/v2/courses/", params=request.GET)
+    content = requests.get("{baseUrl}courses/".format(baseUrl=baseUrl), params=request.GET)
     return JsonResponse(content.json(), safe=False)
 
 # reports
